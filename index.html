@@ -4,10 +4,110 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
       <title>Quiz</title>
-      <link rel="stylesheet" href="style.css">
-      <script src="script.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
-    
+    <main class="container jumbotron">
+     <h1>welcome to quizz</h1>
+        <h2>Question</h2>
+        <div id="question">
+
+        </div>
+
+        <div class="row">
+            <button class=" col-xs-4 btn btn-primary" id="previous">Previous</button>
+            <button class="col-xs-4 col-xs-offset-4 btn btn-primary" id="next">Next</button>
+        </div>
+    </main>
+
+
+
+    <script type="text/javascript" src="./questions.js"></script>
+    <script>
+        var num_question =0;
+
+        var user_answer = [];
+        //remplissage de réponse neutres
+        var i;
+        for( i=0 ; i< questions.length ; i++){
+            user_answer[i] = {
+                0 : "btn-default",
+                1 : "btn-default",
+                2 : "btn-default",
+                3 : "btn-default"
+            }
+        }
+        // afficher la bonne case du tabeau de question
+        function questionnaire(num_question, user_answer) {
+            var questionnaireHTML =
+                '<h4>n° ' + (num_question + 1) + ' : ' + questions[num_question].question + '</h4>' +
+                '<div class="row">' +
+                '<button class="rep col-sm-6 col-xs-12 btn ' + user_answer[num_question][0] + '" id="r0">' + questions[num_question].r0 + '</button>' +
+                '<button class="rep col-sm-6 col-xs-12 btn ' + user_answer[num_question][1] + '" id="r1">' + questions[num_question].r1 + '</button>' +
+                '</div>' +
+                '<div class="row">' +
+                '<button class="rep col-sm-6 col-xs-12 btn ' + user_answer[num_question][2] + '" id="r2">' + questions[num_question].r2 + '</button>' +
+                '<button class="rep col-sm-6 col-xs-12 btn ' + user_answer[num_question][3] + '" id="r3">' + questions[num_question].r3 + '</button>' +
+                ' </div>'
+            ;
+            return questionnaireHTML;
+        }
+        //afficher la page initale
+        document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+        // navigation dans le questionnaire
+
+        //NEXT
+        document.getElementById("next").addEventListener("click", function () {
+            if(num_question === questions.length -1 ){
+                alert("c'est  la derniere question");
+            }
+            else {
+                num_question++;
+                document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+            }
+        });
+        //PREVIOUS
+        document.getElementById("previous").addEventListener("click", function () {
+
+            if(num_question === 0){
+                alert("c'est déja la premiere question");
+            }
+            else {
+                num_question--;
+                document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+            }
+        });
+
+        //réponse utilisateur
+        function boucle_validate() {
+            var j;
+            for (j = 0; j < 4; j++) {
+                document.getElementsByClassName("rep")[j].onclick = function () {
+                    //si la réponse est juste
+                    if (this.getAttribute("id") === questions[num_question].goodone) {
+                        //on change la valeur du bouton dans le tableau réponse
+                        user_answer[num_question][this.getAttribute("id").substring(1, 2)] = "btn-success";
+                        //puis on réactualise la page
+                        document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+                        boucle_validate();
+//
+                    }
+                    else {
+                        //on change la valeur du bouton dans le tableau réponse
+                        user_answer[num_question][this.getAttribute("id").substring(1, 2)] = "btn-danger";
+                        //puis on réactualise la page
+                        document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+                    }
+
+                    console.log(user_answer[num_question]);
+                    console.log(user_answer);
+                    boucle_validate();
+
+                };
+            }
+
+        }
+        boucle_validate();
+    </script>
     </body>
 </html>
