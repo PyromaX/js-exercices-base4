@@ -24,12 +24,15 @@
 
     <script type="text/javascript" src="./questions.js"></script>
     <script>
+        //compteur permettant de voir a quelle question du questionnaire on est
         var num_question =0;
 
+        //tableau des resultats utilisateur
         var user_answer = [];
+
         //remplissage de réponse neutres
-        var i;
-        for( i=0 ; i< questions.length ; i++){
+
+        for( var i=0 ; i< questions.length ; i++){
             user_answer[i] = {
                 0 : "btn-default",
                 1 : "btn-default",
@@ -52,20 +55,36 @@
             ;
             return questionnaireHTML;
         }
+
+        //fonction pratique permettant d'actualliser les infos du questionnaire ainsi que de réamorcer les events listeners
+        function refresh(num_question, user_answer) {
+            document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+            check_response();
+        }
+
         //afficher la page initale
-        document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+        refresh(num_question, user_answer);
         // navigation dans le questionnaire
 
         //NEXT
         document.getElementById("next").addEventListener("click", function () {
-            if(num_question === questions.length -1 ){
-                alert("c'est  la derniere question");
+            //si le questionnaire est fini (toutes les bonnes réponses ont été trouvées :
+            if
+                (nb_of_win() === questions.length)
+            {
+                alert("le questionnaire est terminé, vous avez fait " + nb_of_errors() + "erreurs" );
             }
+            //si une bonne réponse manque
+            else if ((num_question === questions.length -1)){
+                    alert("il vous manque une case");
+            }
+            //dans toutes les autres situations
             else {
                 num_question++;
-                document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+                refresh(num_question, user_answer);
             }
         });
+
         //PREVIOUS
         document.getElementById("previous").addEventListener("click", function () {
 
@@ -74,40 +93,57 @@
             }
             else {
                 num_question--;
-                document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
+                refresh(num_question, user_answer);
             }
         });
 
-        //réponse utilisateur
-        function boucle_validate() {
-            var j;
-            for (j = 0; j < 4; j++) {
+        //vérification de la réponse utilisateur
+        function check_response() {
+
+            for (var j = 0; j < 4; j++) {
                 document.getElementsByClassName("rep")[j].onclick = function () {
                     //si la réponse est juste
                     if (this.getAttribute("id") === questions[num_question].goodone) {
                         //on change la valeur du bouton dans le tableau réponse
                         user_answer[num_question][this.getAttribute("id").substring(1, 2)] = "btn-success";
-                        //puis on réactualise la page
-                        document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
-                        boucle_validate();
-//
                     }
+                    //si c'est faux
                     else {
                         //on change la valeur du bouton dans le tableau réponse
                         user_answer[num_question][this.getAttribute("id").substring(1, 2)] = "btn-danger";
-                        //puis on réactualise la page
-                        document.getElementById("question").innerHTML = questionnaire(num_question, user_answer);
                     }
-
+                    //puis on réactualise le questionnaire
+                    refresh(num_question, user_answer);
                     console.log(user_answer[num_question]);
                     console.log(user_answer);
-                    boucle_validate();
-
                 };
             }
-
         }
-        boucle_validate();
+
+        // comptage du score
+        function nb_of_errors() {
+            var nb =0;
+            for(var k = 0 ; k< user_answer.length ; k++){
+                for(var l = 0 ; l< 4 ; l++){
+                    if(user_answer[k][l] === "btn-danger"){
+                        nb++;
+                    }
+                }
+            }
+            return nb;
+        }
+
+        function nb_of_win() {
+            var nbs =0;
+            for(var k = 0 ; k< user_answer.length ; k++){
+                for(var l = 0 ; l< 4 ; l++){
+                    if(user_answer[k][l] === "btn-success"){
+                        nbs++;
+                    }
+                }
+            }
+            return nbs;
+        }
     </script>
     </body>
 </html>
